@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Video Downloader</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f9;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: white;
+            width: 300px;
+        }
+        input[type="url"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 14px;
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>YouTube Video Downloader</h1>
+    <form id="downloadForm">
+        <input type="url" id="videoUrl" placeholder="Enter YouTube Video URL" required>
+        <button type="submit">Download</button>
+    </form>
+    <div class="message" id="message"></div>
+
+    <script>
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent form submission
+            const url = document.getElementById('videoUrl').value.trim();
+            const messageDiv = document.getElementById('message');
+
+            if (!url) {
+                messageDiv.textContent = "Please enter a valid URL.";
+                messageDiv.className = "message error";
+                return;
+            }
+
+            messageDiv.textContent = "Processing...";
+            messageDiv.className = "message";
+
+            try {
+                const response = await fetch('http://localhost:5000/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    messageDiv.textContent = "Download initiated. Check your downloads folder.";
+                    messageDiv.className = "message";
+                } else {
+                    messageDiv.textContent = `Error: ${result.error}`;
+                    messageDiv.className = "message error";
+                }
+            } catch (error) {
+                messageDiv.textContent = "An error occurred. Please try again.";
+                messageDiv.className = "message error";
+            }
+        });
+    </script>
+</body>
+</html>
