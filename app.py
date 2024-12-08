@@ -9,20 +9,17 @@ CORS(app)
 
 def download_video():
     try:
-        # Get the URL from the incoming request
         data = request.json
         url = data.get('url')
 
         if not url:
             return jsonify({"error": "No URL provided"}), 400
 
-        # yt-dlp options
         options = {
             'format': 'best',
-            'outtmpl': './downloads/%(title)s.%(ext)s'  # Save file to the 'downloads' folder
+            'outtmpl': '/downloads/%(title)s.%(ext)s'
         }
 
-        # Download the video
         with yt_dlp.YoutubeDL(options) as ydl:
             ydl.download([url])
 
@@ -31,5 +28,11 @@ def download_video():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/')
+def home():
+    return "Backend is running!"
+    
 if __name__ == "__main__":
     app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))  
+    app.run(host="0.0.0.0", port=port)
